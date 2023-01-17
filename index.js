@@ -1,25 +1,14 @@
+require("dotenv").config();
+const cors = require("cors");
+const cookieParser = require("cookie-parser");
 const express = require("express");
 const mongoose = require("mongoose");
 
-const dbUser = process.env.DB_USER;
-const dbPass = process.env.DB_PASS;
-
-// mongoose.connect(
-//   process.env.MONGO_URL,
-//   {
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true,
-//     useCreateIndex: true,
-//   },
-//   () => {
-//     console.log("Connected to the database.");
-//   }
-// );
-
 mongoose
-  .connect(
-    "mongodb+srv://LisandraFerraz:Bazph0000@movinitdb.ebicxsa.mongodb.net/?retryWrites=true&w=majority"
-  )
+  .connect(process.env.MONGO_URL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => {
     app.listen(8000);
     console.log("Connection with the database established.");
@@ -32,6 +21,15 @@ const routes = require("./routes/routes");
 
 app = express();
 
+app.use(cookieParser());
+
+app.use(
+  cors({
+    credentials: true,
+    origin: ["http://localhost:4200", "http://localhost:8000"],
+  })
+);
+
 app.get("/", (req, resp) => {
   resp.status(200).json({ msg: "Olá mundo!" });
 });
@@ -39,5 +37,3 @@ app.get("/", (req, resp) => {
 app.use(express.json());
 
 app.use("/api", routes);
-
-// app.listen(8000);
